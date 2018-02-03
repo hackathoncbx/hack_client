@@ -6,7 +6,7 @@ import { TabNavigator, TabBarBottom } from 'react-navigation';
 import Colors from '../constants/Colors';
 
 import ProfileScreen from '../screens/ProfileScreen';
-import LinksScreen from '../screens/LinksScreen';
+import EmergencyScreen from '../screens/EmergencyScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 
 export default TabNavigator(
@@ -14,8 +14,8 @@ export default TabNavigator(
     Profile: {
       screen: ProfileScreen,
     },
-    Links: {
-      screen: LinksScreen,
+    Emergency: {
+      screen: EmergencyScreen,
     },
     Settings: {
       screen: SettingsScreen,
@@ -33,7 +33,7 @@ export default TabNavigator(
                 ? `ios-person${focused ? '' : '-outline'}`
                 : 'md-information-circle';
             break;
-          case 'Links':
+          case 'Emergency':
             iconName = Platform.OS === 'ios' ? `ios-pulse${focused ? '' : '-outline'}` : 'md-pulse';
             break;
           case 'Settings':
@@ -50,6 +50,7 @@ export default TabNavigator(
         );
       },
     }),
+    initialRouteName: 'Emergency',
     tabBarComponent: TabBarBottom,
     tabBarPosition: 'bottom',
     animationEnabled: false,
