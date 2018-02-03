@@ -1,5 +1,8 @@
 import React from 'react'
+import { Notifications } from 'expo'
 import { Image, StyleSheet, TouchableOpacity } from 'react-native'
+
+import ServerAPI from '../constants/ServerAPI'
 
 export class EmergencyButton extends React.Component {
   render() {
@@ -10,16 +13,17 @@ export class EmergencyButton extends React.Component {
     );
   }
 
-  _handleEmergencyPress() {
-    fetch(ServerAPI.alert, {
+  async _handleEmergencyPress() {
+    let token = await Notifications.getExpoPushTokenAsync();
+
+    fetch(ServerAPI.alerts, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        firstParam: 'yourValue',
-        secondParam: 'yourOtherValue',
+        token: token
       }),
     });
   }

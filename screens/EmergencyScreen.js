@@ -1,10 +1,6 @@
 import React from 'react';
-import {
-  StyleSheet,
-  View,
-} from 'react-native';
+import { StyleSheet, View, } from 'react-native';
 
-import ServerAPI from '../constants/ServerAPI'
 import { EmergencyButton } from '../components/EmergencyButton';
 
 export default class EmergencyScreen extends React.Component {
