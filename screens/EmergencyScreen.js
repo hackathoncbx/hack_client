@@ -20,10 +20,12 @@ export default class EmergencyScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Image
-          source={require('../assets/images/alert-icon-red.png')}
-          style={styles.welcomeImage}
-        />
+        <TouchableOpacity>
+          <Image
+            source={require('../assets/images/alert-icon-red.png')}
+            style={styles.welcomeImage}
+          />
+        </TouchableOpacity>
       </View>
     );
   }
