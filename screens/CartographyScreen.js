@@ -23,9 +23,16 @@ const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origi
 
 const styles = StyleSheet.create({
   button: {
-    padding: 10,
-    backgroundColor: '#FFF',
-    borderBottom: '1px',
+    backgroundColor: '#fefefe',
+    flex: 1,
+    alignItems: 'center'
+  },
+  buttonContainer: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    flex: 1,
+    flexDirection: 'row'
+
   }
 })
 
@@ -110,11 +117,15 @@ export default class CartographyScreen extends React.Component {
   }
 
   onPressButton(e) {
-    openMap({
-      latitude: this.state.selectedMarkerCoordinates.latitude,
-      longitude: this.state.selectedMarkerCoordinates.longitude,
-      provider: 'google'
-    });
+    alert('Got pressed.');
+    alert(JSON.stringify(this.state.selectedMarkerCoordinates));
+    if (typeof(this.state.selectedMarkerCoordinates !== undefined) ) {
+      openMap({
+        latitude: this.state.selectedMarkerCoordinates.latitude,
+        longitude: this.state.selectedMarkerCoordinates.longitude,
+        provider: 'google'
+      });
+    }
   }
 
   async getDirections(startLoc, destLoc) {
@@ -163,11 +174,11 @@ export default class CartographyScreen extends React.Component {
     }
 
     if (typeof(markerTypes === undefined) || markerTypes.includes("hospitals")) {
-      markers = markers.concat(this.getHospitals());
+      markers = markers.concat(await this.getHospitals());
     }
 
     if (typeof(markerTypes === undefined) || markerTypes.includes("drugStores")) {
-      markers = markers.concat(this.getDrugStores());
+      markers = markers.concat(await this.getDrugStores());
     }
 
     this.setState({markers: markers})
@@ -196,69 +207,70 @@ export default class CartographyScreen extends React.Component {
     return defibrillatorMarkers;
   }
 
-  getHospitals() {
-    return [
-      {
-        coordinate: {
-          latitude: 46.525606,
-          longitude: -72.743024,
-        },
-        title: "Centre hospitalier du Centre-de-la-mauricie",
-        type: "Hospitals",
-        pinColor: "#00FF00"
-      },
-    ]
+  async getHospitals() {
+    let resp = await fetch(ServerAPI.hospitals, {
+      method: 'GET'
+    });
+
+    let hospitals = await resp.json();
+
+    let hospitalMarkers = hospitals.map((hospital, _index) => {
+      return  {
+          coordinate: {
+            latitude : hospital.coordinates.latitude,
+            longitude : hospital.coordinates.longitude
+          },
+          title: 'Hôpital',
+          pinColor: "#00FF00"
+      }
+    })
+
+    return hospitalMarkers;
   }
 
-  getDrugStores() {
-    return [
-      {
-        coordinate: {
-          latitude: 46.622916,
-          longitude: -72.698892,
-        },
-        title: "Uniprix Philippe Germain et David Trépanier - Pharmacie affiliée",
-        type: "Hospitals",
-        pinColor: "#00FFFF"
-      },
-    ]
+  async getDrugStores() {
+    let resp = await fetch(ServerAPI.drugStores, {
+      method: 'GET'
+    });
+
+    let drugStores = await resp.json();
+
+    let drugStoreMarkers = drugStores.map((drugStore, _index) => {
+      return  {
+          coordinate: {
+            latitude : drugStore.coordinates.latitude,
+            longitude : drugStore.coordinates.longitude
+          },
+          title: 'Pharmacie',
+          pinColor: "#00FFFF"
+      }
+    })
+
+    return drugStoreMarkers;
   }
 
   render() {
     return (
-      <MapView
-        style={{ flex: 1 }}
-        initialRegion={this.state.region}
-        >
-        {this.state.markers.map((marker, index) => {
-            return (
-              <Marker key={index}
-                coordinate={marker.coordinate}
-                title={marker.title}
-                pinColor={marker.pinColor}
-                onPress={this.onPressMarker}
-                >
-              </Marker>
-            );
-          })}
-          <Polyline
-        		coordinates={[
-              ...this.state.routeCoords
-            ]}
-        		strokeColor="#0000FF" // fallback for when `strokeColors` is not supported by the map-provider
-        		strokeWidth={4}
-        	/>
-
-          <TouchableOpacity style={styles.button} onPress={this.onPressButton} >
-            <Ionicons
-              name={'ios-navigate'}
-              size={28}
-              style={{ marginBottom: -3 }}
-            />
-            <Text>Navigate to this marker</Text>
-          </TouchableOpacity>
-
+      <View style={{ flex: 1}}>
+        <View style={{ flex: 1, flexDirection: 'row'}}>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.button} onPress={this.onPressButton}>
+              <Ionicons
+                name={'ios-navigate'}
+                size={28}
+                color={'#ccc'}
+              />
+              <Text color={'#ccc'}>Navigate</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.buttonContainer} />
+        </View>
+        <MapView
+          style={{ flex: 10 }}
+          initialRegion={this.state.region}
+          >
         </MapView>
+      </View>
     );
   }
 }
