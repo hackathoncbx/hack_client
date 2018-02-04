@@ -14,7 +14,8 @@ export class FirstResponderToggle extends React.Component {
   };
 
   static contextTypes = {
-    toggleAlert: PropTypes.func
+    toggleAlert: PropTypes.func,
+    goHandle: PropTypes.func,
   };
 
   componentWillMount() {
@@ -43,13 +44,15 @@ export class FirstResponderToggle extends React.Component {
   async registerResponder(value) {
     if (value) {
       toggleAlert = this.context.toggleAlert
+      goHandle = this.context.goHandle
       navigator.geolocation.getCurrentPosition(
         (position) => {
           var x = position.coords.longitude;
           var y = position.coords.latitude;
           this.state.connection = new WebSocket(ServerAPI.wsResponder + "?token=" + this.state.token + "&longitude=" + x + "&latitude=" + y);
           this.state.connection.onmessage = function(message) {
-            toggleAlert(message.data + "111");
+            // toggleAlert(message.data + "111");
+            goHandle()
           }
         },
         (error) => { console.log("error", error); this.setState({ error: error.message }) },

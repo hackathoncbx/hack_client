@@ -4,12 +4,16 @@ import { StackNavigator } from 'react-navigation';
 
 import MainTabNavigator from './MainTabNavigator';
 import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
+import HandleEmergencyScreen from '../screens/HandleEmergencyScreen'
 
 const RootStackNavigator = StackNavigator(
   {
     Main: {
       screen: MainTabNavigator,
     },
+    HandleEmergency: {
+      screen: HandleEmergencyScreen,
+    }
   },
   {
     navigationOptions: () => ({

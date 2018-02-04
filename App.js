@@ -12,6 +12,11 @@ export default class App extends React.Component {
     isLoadingComplete: false,
   };
 
+  constructor(props) {
+    super(props)
+    this.onHand = this.onHand.bind(this)
+  }
+
   getChildContext() {
     return {
       toggleAlert: this.toggleAlert
@@ -52,7 +57,6 @@ export default class App extends React.Component {
             color="white"
             height={50}
             style={styles.alert}
-            onPress={this.toggleAlert}
           >
             <View style={styles.notif_image}>
               <View style={styles.textContainer}>
@@ -64,6 +68,12 @@ export default class App extends React.Component {
         </View>
       );
     }
+  }
+
+  onHand = (customAlert) => {
+    // this.toggleAlert(customAlert)
+    console.log(this.props)
+    this.props.navigation.navigate('Cartography')
   }
 
   _loadResourcesAsync = async () => {
