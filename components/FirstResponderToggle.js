@@ -36,7 +36,7 @@ export class FirstResponderToggle extends React.Component {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         var x = position.coords.longitude;
-        var y = position.coords.lattitude;
+        var y = position.coords.latitude;
         var connection = new WebSocket("ws://127.0.0.1:3000?token=" + this.state.token + "&x=" + x + "&y=" + y);
            connection.onmessage = function(message) {
            console.log(message + "111");
