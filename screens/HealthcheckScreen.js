@@ -29,10 +29,6 @@ export default class HeatlhcheckScreen extends React.Component {
   }
 
   _handleEmergencySituation = () => {
-    alarm.stop();
-    console.log(alarm);
-    alert(`the id is ${alarm.id}`);
-
     fetch(ServerAPI.alerts + `/${alarm.id}`, {
      headers: {
        'Accept': 'application/json',

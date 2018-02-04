@@ -44,7 +44,7 @@ export class EmergencyButton extends React.Component {
          alarm.play();
          this.props.onClick();
       },
-      (error) => { console.log("error", error); this.setState({ error: error.message }) },
+      (error) => { this.setState({ error: error.message }) },
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
   }
