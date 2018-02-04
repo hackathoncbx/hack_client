@@ -16,6 +16,7 @@ export class FirstResponderToggle extends React.Component {
   static contextTypes = {
     toggleAlert: PropTypes.func,
     goHandle: PropTypes.func,
+    socket: PropTypes.object,
   };
 
   componentWillMount() {
@@ -45,6 +46,7 @@ export class FirstResponderToggle extends React.Component {
     if (value) {
       toggleAlert = this.context.toggleAlert
       goHandle = this.context.goHandle
+      socket = this.context.socket
       navigator.geolocation.getCurrentPosition(
         (position) => {
           var x = position.coords.longitude;
@@ -52,6 +54,7 @@ export class FirstResponderToggle extends React.Component {
           this.state.connection = new WebSocket(ServerAPI.wsResponder + "?token=" + this.state.token + "&longitude=" + x + "&latitude=" + y);
           this.state.connection.onmessage = function(message) {
             // toggleAlert(message.data + "111");
+            socket.data = message.data
             goHandle()
           }
         },

@@ -15,15 +15,18 @@ export default class App extends React.Component {
   constructor(props) {
     super(props)
     this.onHand = this.onHand.bind(this)
+    this.socket = {}
   }
 
   getChildContext() {
     return {
-      toggleAlert: this.toggleAlert
+      toggleAlert: this.toggleAlert,
+      socket: this.socket
     };
   }
   static childContextTypes = {
-    toggleAlert: PropTypes.func
+    toggleAlert: PropTypes.func,
+    socket: PropTypes.object
   };
 
   toggleAlert = (customAlert) => {
