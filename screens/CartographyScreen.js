@@ -10,9 +10,11 @@ import {
 } from "react-native";
 import MapView, { Marker, Polyline } from 'react-native-maps';
 
+import ServerAPI from '../constants/ServerAPI'
+
 const mode = 'driving'; // 'walking';
-const origin = '46.540816, -72.748414';
-const destination = '46.540816, -72.748414';
+const origin = '46.540816,-72.748414';
+const destination = '46.540816,-72.748414';
 const APIKEY = 'AIzaSyAwk_xItQdpLFBWhBrk4crbmUhVHOjjrbI';
 const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${APIKEY}&mode=${mode}`;
 
@@ -41,7 +43,7 @@ export default class CartographyScreen extends React.Component {
       height: new Animated.Value(0),
     },
     transition: {},
-    markers: this.getMarkersByType(),
+    markers: [],
     region: {
       latitude: 46.5429,
       longitude: -72.748,
@@ -85,6 +87,8 @@ export default class CartographyScreen extends React.Component {
       }, 10);
     });
 
+    this.getMarkersByType();
+
     this.getDirections(origin, destination);
   }
 
@@ -124,7 +128,7 @@ export default class CartographyScreen extends React.Component {
       }
   }
 
-  getMarkersByType(markerTypes) {
+  async getMarkersByType(markerTypes) {
     let markers = [
       {
         coordinate: {
@@ -136,8 +140,8 @@ export default class CartographyScreen extends React.Component {
       }
     ];
 
-    if (typeof(markerTypes === undefined) || markerTypes.includes("defibrilators")) {
-      markers = markers.concat(this.getDefibrilators());
+    if (typeof(markerTypes === undefined) || markerTypes.includes("defibrillators")) {
+      markers = markers.concat(await this.getDefibrillators());
     }
 
     if (typeof(markerTypes === undefined) || markerTypes.includes("hospitals")) {
@@ -148,22 +152,30 @@ export default class CartographyScreen extends React.Component {
       markers = markers.concat(this.getDrugStores());
     }
 
+    this.setState({markers: markers})
     return markers;
   }
 
-  getDefibrilators() {
-    return [
-      {
-        coordinate: {
-          latitude: 46.547874,
-          longitude: -72.744969,
-        },
-        title: "Centre Gervais Auto",
-        description: "Where hockey is played",
-        type: "Defibrilator",
-        pinColor: "#0000FF"
-      },
-    ]
+  async getDefibrillators() {
+
+    let resp = await fetch(ServerAPI.defibrillators, {
+      method: 'GET'
+    });
+
+    let defibrillators = await resp.json();
+
+    let defibrillatorMarkers = defibrillators.map((defibrillator, _index) => {
+      return  {
+          coordinate: {
+            latitude : defibrillator.coordinates.latitude,
+            longitude : defibrillator.coordinates.longitude
+          },
+          title: 'Défribrillateur',
+          pinColor: "#0000FF"
+      }
+    })
+
+    return defibrillatorMarkers;
   }
 
   getHospitals() {
@@ -216,7 +228,7 @@ export default class CartographyScreen extends React.Component {
               ...this.state.routeCoords
             ]}
         		strokeColor="#0000FF" // fallback for when `strokeColors` is not supported by the map-provider
-        		strokeWidth={6}
+        		strokeWidth={4}
         	/>
         </MapView>
 
