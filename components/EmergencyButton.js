@@ -3,6 +3,7 @@ import { Notifications } from 'expo'
 import { Image, StyleSheet, TouchableOpacity } from 'react-native'
 
 import ServerAPI from '../constants/ServerAPI'
+import alarm from '../globals/Alarm'
 
 export class EmergencyButton extends React.Component {
   render() {
@@ -26,6 +27,8 @@ export class EmergencyButton extends React.Component {
         token: token
       }),
     });
+
+    alarm.play()
   }
 }
 

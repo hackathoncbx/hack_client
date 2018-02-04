@@ -50,7 +50,7 @@ export default TabNavigator(
         );
       },
     }),
-    initialRouteName: 'Cartography',
+    initialRouteName: 'Emergency',
     tabBarComponent: TabBarBottom,
     tabBarPosition: 'bottom',
     animationEnabled: false,
