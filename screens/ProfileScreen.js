@@ -56,9 +56,10 @@ export default class ProfileScreen extends React.Component {
         method: "GET"
       })
     }).then((resp) => {
-      this.setState({ userFinded: false, values: resp.json() });
-      console.log(resp.json());
-      if (resp.json().length) this.setState({values: resp.json()["gender"] });
+      let json = resp.json()
+      let val = json.length ? json["gender"] : json
+      console.log(json);
+      this.setState({ userFinded: false, values: val });
     });
   }
 
