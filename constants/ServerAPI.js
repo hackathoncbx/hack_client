@@ -5,4 +5,5 @@ export default {
   defibrillators: server_uri + "/defibrillators",
   drugStores: server_uri + "/drug_stores",
   hospitals: server_uri + "/hospitals",
+  wsResponder: "ws://localhost:3000",
 }

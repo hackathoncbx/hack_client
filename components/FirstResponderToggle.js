@@ -37,10 +37,10 @@ export class FirstResponderToggle extends React.Component {
       (position) => {
         var x = position.coords.longitude;
         var y = position.coords.latitude;
-        var connection = new WebSocket("ws://127.0.0.1:3000?token=" + this.state.token + "&x=" + x + "&y=" + y);
-           connection.onmessage = function(message) {
-           console.log(message + "111");
-         }
+        var connection = new WebSocket(ServerAPI.wsResponder + "?token=" + this.state.token + "&longitude=" + x + "&latitude=" + y);
+        connection.onmessage = function(message) {
+          console.log(message.data + "111");
+        }
       },
       (error) => { console.log("error", error); this.setState({ error: error.message }) },
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
