@@ -48,12 +48,17 @@ export default class App extends React.Component {
           <StatusBarAlert
             visible={this.state.alert}
             message="Alert!"
-            backgroundColor="#3CC29E"
+            backgroundColor="#bf7030"
             color="white"
+            height={50}
             style={styles.alert}
             onPress={this.toggleAlert}
           >
-            <Text>{this.state.customAlert}</Text>
+            <View style={styles.notif_image}>
+              <View style={styles.textContainer}>
+                <Text style={styles.text}>Un signal de détresse a été activé dans votre secteur</Text>
+              </View>
+            </View>
           </StatusBarAlert>
           <RootNavigation />
         </View>
@@ -97,4 +102,19 @@ const styles = StyleSheet.create({
     height: 24,
     backgroundColor: 'rgba(0,0,0,0.2)',
   },
+  alert: {
+    paddingTop: 15,
+  },
+  text: {
+    color: 'white',
+    fontFamily: 'Arial',
+    paddingLeft: 15,
+    width: '70%',
+  },
+  right: {
+    height: 60,
+    alignItems: 'center',
+    paddingBottom: 30,
+    paddingRight: 30
+  }
 });
