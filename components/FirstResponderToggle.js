@@ -8,7 +8,7 @@ import ServerAPI from '../constants/ServerAPI'
 
 export class FirstResponderToggle extends React.Component {
   state = {
-    value: true,
+    value: false,
     token: null,
     connection: null
   };
