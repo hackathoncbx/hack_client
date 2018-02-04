@@ -16,7 +16,13 @@ export default class HandleEmergencyScreen extends React.Component {
     return (
       <View style={styles.pageContainer}>
         <View style={styles.alertContainer}>
-          <Text>Insert some shit here...</Text>
+          <Text style={styles.alertDescriptions}>Type: {JSON.parse(this.context.socket.data).type }</Text>
+          <Text style={styles.alertDescriptions}>Prénom: {JSON.parse(this.context.socket.data).firstName || "" }</Text>
+          <Text style={styles.alertDescriptions}>Nom: {JSON.parse(this.context.socket.data).lastName || "" }</Text>
+          <Text style={styles.alertDescriptions}>Sexe: {JSON.parse(this.context.socket.data).sexe || "" }</Text>
+          <Text style={styles.alertDescriptions}>Téléphone: {JSON.parse(this.context.socket.data).phoneNumber || "" }</Text>
+          <Text style={styles.alertDescriptions}>Groupe sanguin: {JSON.parse(this.context.socket.data).bloodType || "" }</Text>
+          <Text style={styles.alertDescriptions}>Allergies: {JSON.parse(this.context.socket.data).allergies || "" }</Text>
         </View>
         <View style={styles.buttonsContainer}>
           <View style={styles.buttonContainer}>
@@ -26,7 +32,7 @@ export default class HandleEmergencyScreen extends React.Component {
                 size={28}
                 style={styles.buttonIcon}
               />
-              <Text style={styles.buttonText}>Accepter # {this.context.socket.data }</Text>
+              <Text style={styles.buttonText}>Accepter</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.buttonContainer}>
@@ -36,7 +42,7 @@ export default class HandleEmergencyScreen extends React.Component {
                 size={28}
                 style={styles.buttonIcon}
               />
-              <Text style={styles.buttonText}>Rejeter # {this.context.socket.data }</Text>
+              <Text style={styles.buttonText}>Rejeter</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -51,7 +57,7 @@ export default class HandleEmergencyScreen extends React.Component {
        'Content-Type': 'application/json'
       },
       method: "POST",
-      body: JSON.stringify()
+      body: JSON
     }).then((resp) => { return resp.json()}).then((resp) => { Object.assign(alarm, resp); });
   }
 
@@ -89,6 +95,12 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     flex: 1,
     flexDirection: 'row'
+  },
+  alertDescriptions: {
+    fontSize: 17,
+    color: 'rgba(96,100,109, 1)',
+    lineHeight: 24,
+    textAlign: 'left',
   },
   pageContainer: {
     flex: 1
