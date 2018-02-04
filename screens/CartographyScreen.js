@@ -167,7 +167,7 @@ export default class CartographyScreen extends React.Component {
 
   onPressMarker(e) {
     this.setState({selectedMarkerCoordinates: e.nativeEvent.coordinate});
-    //this.getDirections(origin, e.nativeEvent.coordinate.latitude + ',' + e.nativeEvent.coordinate.longitude)
+    this.getDirections(origin, e.nativeEvent.coordinate.latitude + ',' + e.nativeEvent.coordinate.longitude)
   }
 
   onPressButton(e) {
@@ -220,7 +220,7 @@ export default class CartographyScreen extends React.Component {
           latitude: 46.540816,
           longitude: -72.748414,
         },
-        title: "You are here!",
+        title: "Vous êtes ici!",
         pinColor: "#FF0000"
       }
     ];
@@ -250,7 +250,7 @@ export default class CartographyScreen extends React.Component {
     let defibrillators = await resp.json();
 
     let defibrillatorMarkers = defibrillators.map((defibrillator, _index) => {
-      return  {
+      return {
           coordinate: {
             latitude : defibrillator.coordinates.latitude,
             longitude : defibrillator.coordinates.longitude
@@ -318,21 +318,21 @@ export default class CartographyScreen extends React.Component {
       return (
         <View style={styles.filtersDropdown} >
           <View style={{flex: 1}}>
-            <Text>Defribrillators</Text>
+            <Text>Défibrillateurs</Text>
             <Switch
               onValueChange={(value) => this.updateActiveMarkerTypes([{markerType: 'defibrillators', value: value}])}
               value={this.state.switchStatesDefibrillators}
             />
           </View>
           <View style={{flex: 1}}>
-            <Text>Hospitals</Text>
+            <Text>Hôpitaux</Text>
             <Switch
               onValueChange={(value) => this.updateActiveMarkerTypes([{markerType: 'hospitals', value: value}])}
               value={this.state.switchStatesHospitals}
             />
           </View>
           <View style={{flex: 1}}>
-            <Text>Drug Stores</Text>
+            <Text>Pharmacies</Text>
             <Switch
               onValueChange={(value) => this.updateActiveMarkerTypes([{markerType: 'drugStores', value: value}])}
               value={this.state.switchStatesDrugStores}
@@ -356,7 +356,7 @@ export default class CartographyScreen extends React.Component {
                 size={28}
                 style={this.buttonIcon()}
               />
-              <Text style={this.buttonText()}>Navigate</Text>
+              <Text style={this.buttonText()}>Naviguer</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.buttonContainer}>
@@ -366,7 +366,7 @@ export default class CartographyScreen extends React.Component {
                 size={28}
                 style={styles.buttonIcon}
               />
-              <Text style={styles.buttonText}>Filter</Text>
+              <Text style={styles.buttonText}>Filtrer</Text>
             </TouchableOpacity>
           </View>
         </View>
