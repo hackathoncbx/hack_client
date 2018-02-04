@@ -25,10 +25,6 @@ export default class CartographyScreen extends React.Component {
     this.onPressMarker = this.onPressMarker.bind(this)
   }
 
-  static navigationOptions = {
-    title: 'Map'
-  };
-
   state = {
     initial: null,
     openIndex: null,
