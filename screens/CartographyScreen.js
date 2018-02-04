@@ -12,11 +12,17 @@ import MapView, { Marker, Polyline } from 'react-native-maps';
 
 const mode = 'driving'; // 'walking';
 const origin = '46.540816, -72.748414';
-const destination = '46.545595, -72.749890';
+const destination = '46.540816, -72.748414';
 const APIKEY = 'AIzaSyAwk_xItQdpLFBWhBrk4crbmUhVHOjjrbI';
 const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${APIKEY}&mode=${mode}`;
 
 export default class CartographyScreen extends React.Component {
+
+  constructor(props) {
+    super(props)
+    this.onPressMarker = this.onPressMarker.bind(this)
+  }
+
   static navigationOptions = {
     title: 'Map'
   };
@@ -27,7 +33,7 @@ export default class CartographyScreen extends React.Component {
     render: false,
     show: false,
     overlayImage: false,
-    toto: [],
+    routeCoords: [],
     coords: {
       left: new Animated.Value(0),
       top: new Animated.Value(0),
@@ -35,25 +41,7 @@ export default class CartographyScreen extends React.Component {
       height: new Animated.Value(0),
     },
     transition: {},
-    markers: [
-      {
-        coordinate: {
-          latitude: 46.540816,
-          longitude: -72.748414,
-        },
-        title: "Cognibox HQ",
-        description: "Where contractors are managed",
-        pinColor: "#0000FF"
-      },{
-        coordinate: {
-          latitude: 46.545595,
-          longitude: -72.749890,
-        },
-        title: "DigiHub Shawinigan",
-        description: "Where no sleeping happens",
-        pinColor: "#0000FF"
-      },
-    ],
+    markers: this.getMarkersByType(),
     region: {
       latitude: 46.5429,
       longitude: -72.748,
@@ -103,9 +91,14 @@ export default class CartographyScreen extends React.Component {
   decode = (t,e) => {for(var n,o,u=0,l=0,r=0,d= [],h=0,i=0,a=null,c=Math.pow(10,e||5);u<t.length;){a=null,h=0,i=0;do a=t.charCodeAt(u++)-63,i|=(31&a)<<h,h+=5;while(a>=32);n=1&i?~(i>>1):i>>1,h=i=0;do a=t.charCodeAt(u++)-63,i|=(31&a)<<h,h+=5;while(a>=32);o=1&i?~(i>>1):i>>1,l+=n,r+=o,d.push([l/c,r/c])}return d=d.map(function(t){return{latitude:t[0],longitude:t[1]}})}
   // transforms something like this geocFltrhVvDsEtA}ApSsVrDaEvAcBSYOS_@... to an array of coordinates
 
-  async getDirections(startLoc, destinationLoc) {
+  onPressMarker(e) {
+    this.getDirections(origin, e.nativeEvent.coordinate.latitude + ',' + e.nativeEvent.coordinate.longitude)
+  }
+
+  async getDirections(startLoc, destLoc) {
+      if (startLoc != destLoc) {
         try {
-            let resp = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${ startLoc }&destination=${ destinationLoc }`)
+            let resp = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${ startLoc }&destination=${ destLoc }`)
             let respJson = await resp.json();
             let points = this.decode(respJson.routes[0].overview_polyline.points);
 
@@ -115,14 +108,91 @@ export default class CartographyScreen extends React.Component {
                   longitude : point.longitude
               }
             })
-            this.setState({toto: coords})
+
+            let arStartLoc = startLoc.split(',')
+            coords.unshift({latitude: Number(arStartLoc[0]), longitude: Number(arStartLoc[1])});
+
+            let arDestLoc = destLoc.split(',')
+            coords.push({latitude: Number(arDestLoc[0]), longitude: Number(arDestLoc[1])});
+
+            this.setState({routeCoords: coords})
             return coords
         } catch(error) {
             alert(error)
             return error
         }
+      }
+  }
+
+  getMarkersByType(markerTypes) {
+    let markers = [
+      {
+        coordinate: {
+          latitude: 46.540816,
+          longitude: -72.748414,
+        },
+        title: "You are here!",
+        pinColor: "#FF0000"
+      }
+    ];
+
+    if (typeof(markerTypes === undefined) || markerTypes.includes("defibrilators")) {
+      markers = markers.concat(this.getDefibrilators());
     }
 
+    if (typeof(markerTypes === undefined) || markerTypes.includes("hospitals")) {
+      markers = markers.concat(this.getHospitals());
+    }
+
+    if (typeof(markerTypes === undefined) || markerTypes.includes("drugStores")) {
+      markers = markers.concat(this.getDrugStores());
+    }
+
+    return markers;
+  }
+
+  getDefibrilators() {
+    return [
+      {
+        coordinate: {
+          latitude: 46.547874,
+          longitude: -72.744969,
+        },
+        title: "Centre Gervais Auto",
+        description: "Where hockey is played",
+        type: "Defibrilator",
+        pinColor: "#0000FF"
+      },
+    ]
+  }
+
+  getHospitals() {
+    return [
+      {
+        coordinate: {
+          latitude: 46.525606,
+          longitude: -72.743024,
+        },
+        title: "Centre hospitalier du Centre-de-la-mauricie",
+        type: "Hospitals",
+        pinColor: "#00FF00"
+      },
+    ]
+  }
+
+  getDrugStores() {
+    return [
+      {
+        coordinate: {
+          latitude: 46.622916,
+          longitude: -72.698892,
+        },
+        title: "Uniprix Philippe Germain et David Trépanier - Pharmacie affiliée",
+        type: "Hospitals",
+        pinColor: "#00FFFF"
+      },
+    ]
+  }
 
   render() {
     return (
@@ -132,15 +202,18 @@ export default class CartographyScreen extends React.Component {
         >
         {this.state.markers.map((marker, index) => {
             return (
-              <Marker key={index} coordinate={marker.coordinate} title={marker.title} pinColor={marker.pinColor}>
+              <Marker key={index}
+                coordinate={marker.coordinate}
+                title={marker.title}
+                pinColor={marker.pinColor}
+                onPress={this.onPressMarker}
+                >
               </Marker>
             );
           })}
           <Polyline
         		coordinates={[
-              {latitude: this.state.markers[0].coordinate.latitude, longitude: this.state.markers[0].coordinate.longitude}, // optional
-              ...this.state.toto,
-              {latitude: this.state.markers[1].coordinate.latitude, longitude: this.state.markers[1].coordinate.longitude}, // optional
+              ...this.state.routeCoords
             ]}
         		strokeColor="#0000FF" // fallback for when `strokeColors` is not supported by the map-provider
         		strokeWidth={6}
