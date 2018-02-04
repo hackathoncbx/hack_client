@@ -9,7 +9,8 @@ import ServerAPI from '../constants/ServerAPI'
 export class FirstResponderToggle extends React.Component {
   state = {
     value: true,
-    token: null
+    token: null,
+    connection: null
   };
 
   static contextTypes = {
@@ -40,18 +41,24 @@ export class FirstResponderToggle extends React.Component {
   }
 
   async registerResponder(value) {
-    toggleAlert = this.context.toggleAlert
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        var x = position.coords.longitude;
-        var y = position.coords.latitude;
-        var connection = new WebSocket(ServerAPI.wsResponder + "?token=" + this.state.token + "&longitude=" + x + "&latitude=" + y);
-        connection.onmessage = function(message) {
-          toggleAlert(message.data + "111");
-        }
-      },
-      (error) => { console.log("error", error); this.setState({ error: error.message }) },
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
-    );
+    if (value) {
+      toggleAlert = this.context.toggleAlert
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          var x = position.coords.longitude;
+          var y = position.coords.latitude;
+          this.state.connection = new WebSocket(ServerAPI.wsResponder + "?token=" + this.state.token + "&longitude=" + x + "&latitude=" + y);
+          this.state.connection.onmessage = function(message) {
+            toggleAlert(message.data + "111");
+          }
+        },
+        (error) => { console.log("error", error); this.setState({ error: error.message }) },
+        { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
+      );
+    } else {
+      if(this.state.connection) {
+        this.state.connection.close();
+      }
+    }
   }
 }
