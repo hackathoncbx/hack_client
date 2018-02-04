@@ -40,7 +40,7 @@ export default class ProfileScreen extends React.Component {
   };
 
   state = {
-    userFinded: false,
+    userFound: false,
     text: '',
     values: {}
   };
@@ -59,7 +59,7 @@ export default class ProfileScreen extends React.Component {
       let json = resp.json()
       let val = json.length ? json["gender"] : json
       console.log(json);
-      this.setState({ userFinded: false, values: val });
+      this.setState({ userFound: false, values: val });
     });
   }
 
@@ -74,13 +74,13 @@ export default class ProfileScreen extends React.Component {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      method: this.state.userFinded ? "PUT" : "POST",
+      method: this.state.userFound ? "PUT" : "POST",
       body: JSON.stringify({ lastName: this.state.lastName,
       firstName: this.state.firstName,
       gender: this.state.gender,
       bloodType: this.state.bloodType })
     }).then(() => {
-      if (!this.state.userFinded) { this.setState({ userFinded: true }); }
+      if (!this.state.userFound) { this.setState({ userFound: true }); }
     });
   }
 
