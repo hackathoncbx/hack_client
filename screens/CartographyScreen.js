@@ -37,10 +37,6 @@ export default class CartographyScreen extends React.Component {
     this.onPressButton = this.onPressButton.bind(this)
   }
 
-  static navigationOptions = {
-    title: 'Map'
-  };
-
   state = {
     initial: null,
     openIndex: null,
