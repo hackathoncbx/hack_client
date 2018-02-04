@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 
-import { WebBrowser } from 'expo';
+import { WebBrowser, Notifications } from 'expo';
 
 import {
   Button, Text, FormLabel, FormInput, FormValidationMessage
@@ -17,12 +17,13 @@ import {
 import { MonoText } from '../components/StyledText';
 import { FirstResponderToggle } from '../components/FirstResponderToggle';
 import t from 'tcomb-form-native';
+import ServerAPI from '../constants/ServerAPI';
 
 const Form = t.form.Form;
 
 const Layout = t.struct({
-  nom: t.String,
-  prenom: t.String,
+  lastName: t.String,
+  firstName: t.String,
   gender: t.enums({
     M: 'Male',
     F: 'Female'
@@ -33,20 +34,33 @@ const Layout = t.struct({
 const options = {
 };
 
-// <Form type={Layout}
-//   value={this.state.values}
-//   onChange={(values) => { this.setState({values}) }}
-// />
-
 export default class ProfileScreen extends React.Component {
   static navigationOptions = {
     header: null,
   };
 
   state = {
+    userFinded: false,
     text: '',
     values: {}
   };
+
+  componentDidMount() {
+    Notifications.getExpoPushTokenAsync().then((resp) => {
+      this.setState({ token: resp });
+      return fetch(ServerAPI.users + `/${this.state.token}`, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "GET"
+      })
+    }).then((resp) => {
+      this.setState({ userFinded: false, values: resp.json() });
+      console.log(resp.json());
+      if (resp.json().length) this.setState({values: resp.json()["gender"] });
+    });
+  }
 
   constructor(props) {
     super(props);
@@ -54,8 +68,19 @@ export default class ProfileScreen extends React.Component {
   }
 
   handleSubmit() {
-    console.log(this.state);
-    alert("click submit");
+    return fetch(ServerAPI.users + `/${this.state.token}`, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: this.state.userFinded ? "PUT" : "POST",
+      body: JSON.stringify({ lastName: this.state.lastName,
+      firstName: this.state.firstName,
+      gender: this.state.gender,
+      bloodType: this.state.bloodType })
+    }).then(() => {
+      if (!this.state.userFinded) { this.setState({ userFinded: true }); }
+    });
   }
 
   render() {

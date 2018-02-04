@@ -39,7 +39,7 @@ export class EmergencyButton extends React.Component {
            },
            method: "POST",
            body: JSON.stringify({ position: { longitude: position.coords.longitude, latitude: position.coords.latitude }, token: this.state.token })
-         }).then((resp) => { console.log(resp.json()); Object.assign(alarm, JSON.parse(resp._bodyText)); });
+         }).then((resp) => { Object.assign(alarm, resp.json()); });
 
          alarm.play();
          this.props.onClick();
