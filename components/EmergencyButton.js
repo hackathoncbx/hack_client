@@ -30,11 +30,10 @@ export class EmergencyButton extends React.Component {
   }
 
   async _handleEmergencyPress() {
-    console.log("coco");
     navigator.geolocation.getCurrentPosition(
       (position) => {
         var x = position.coords.longitude;
-        var y = position.coords.lattitude;
+        var y = position.coords.latitude;
 
          fetch(ServerAPI.alerts, {
            headers: {
