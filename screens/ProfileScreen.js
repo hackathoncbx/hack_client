@@ -10,6 +10,9 @@ import {
 
 import { WebBrowser, Notifications } from 'expo';
 
+import { StackNavigator } from 'react-navigation';
+import PropTypes from 'prop-types';
+
 import {
   Button, Text, FormLabel, FormInput, FormValidationMessage
 } from 'react-native-elements';
@@ -45,6 +48,19 @@ export default class ProfileScreen extends React.Component {
     values: {}
   };
 
+  getChildContext() {
+    return {
+      goHandle: this.goHandle
+    };
+  }
+  static childContextTypes = {
+    goHandle: PropTypes.func
+  };
+
+  goHandle() {
+    this.props.navigation.navigate('HandleEmergency')
+  }
+
   componentDidMount() {
     Notifications.getExpoPushTokenAsync().then((resp) => {
       this.setState({ token: resp });
@@ -67,6 +83,7 @@ export default class ProfileScreen extends React.Component {
   constructor(props) {
     super(props);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.goHandle = this.goHandle.bind(this);
   }
 
   handleSubmit() {
