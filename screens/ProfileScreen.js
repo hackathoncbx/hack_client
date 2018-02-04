@@ -40,7 +40,7 @@ export default class ProfileScreen extends React.Component {
   };
 
   state = {
-    userFinded: false,
+    userFound: false,
     text: '',
     values: {}
   };
@@ -55,10 +55,12 @@ export default class ProfileScreen extends React.Component {
         },
         method: "GET"
       })
+    }).then((res) => {
+      return res.json();
     }).then((resp) => {
-      this.setState({ userFinded: false, values: resp.json() });
-      console.log(resp.json());
-      if (resp.json().length) this.setState({values: resp.json()["gender"] });
+      this.setState({ userFound: true, values: resp, allergies: resp.allergies });
+    }).catch(() => {
+      // this is important... do not remove me please
     });
   }
 
@@ -73,13 +75,20 @@ export default class ProfileScreen extends React.Component {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      method: this.state.userFinded ? "PUT" : "POST",
-      body: JSON.stringify({ lastName: this.state.lastName,
-      firstName: this.state.firstName,
-      gender: this.state.gender,
-      bloodType: this.state.bloodType })
+      method: this.state.userFound ? "PUT" : "POST",
+      body: JSON.stringify({
+        lastName: this.state.values.lastName,
+        firstName: this.state.values.firstName,
+        gender: this.state.values.gender,
+        bloodType: this.state.values.bloodType,
+        allergies: this.state.allergies
+      })
     }).then(() => {
-      if (!this.state.userFinded) { this.setState({ userFinded: true }); }
+      if (!this.state.userFound) { this.setState({ userFound: true }); };
+      alert("saved!");
+    }).catch((err) => {
+      alert("an error happen!" + JSON.stringify(err));
+      // this is important... do not remove me please
     });
   }
 
@@ -100,8 +109,8 @@ export default class ProfileScreen extends React.Component {
           <FormInput
             multiline={true}
             style={{height: 40}}
-            onChangeText={(allergy) => this.setState({allergy})}
-            value={this.state.allergy}/>
+            onChangeText={(allergies) => this.setState({allergies})}
+            value={this.state.allergies}/>
 
           <Button
             title="Soumettre"
