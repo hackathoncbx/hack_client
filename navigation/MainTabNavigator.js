@@ -7,7 +7,7 @@ import Colors from '../constants/Colors';
 
 import ProfileScreen from '../screens/ProfileScreen';
 import EmergencyScreen from '../screens/EmergencyScreen';
-import SettingsScreen from '../screens/SettingsScreen';
+import CartographyScreen from '../screens/CartographyScreen';
 
 export default TabNavigator(
   {
@@ -17,8 +17,8 @@ export default TabNavigator(
     Emergency: {
       screen: EmergencyScreen,
     },
-    Settings: {
-      screen: SettingsScreen,
+    Cartography: {
+      screen: CartographyScreen,
     },
   },
   {
@@ -36,9 +36,9 @@ export default TabNavigator(
           case 'Emergency':
             iconName = Platform.OS === 'ios' ? `ios-pulse${focused ? '' : '-outline'}` : 'md-pulse';
             break;
-          case 'Settings':
+          case 'Cartography':
             iconName =
-              Platform.OS === 'ios' ? `ios-options${focused ? '' : '-outline'}` : 'md-options';
+              Platform.OS === 'ios' ? `ios-map${focused ? '' : '-outline'}` : 'md-map';
         }
         return (
           <Ionicons
@@ -50,7 +50,7 @@ export default TabNavigator(
         );
       },
     }),
-    initialRouteName: 'Emergency',
+    initialRouteName: 'Cartography',
     tabBarComponent: TabBarBottom,
     tabBarPosition: 'bottom',
     animationEnabled: false,
