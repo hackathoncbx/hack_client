@@ -11,6 +11,7 @@ import {
 import { WebBrowser } from 'expo';
 
 import { MonoText } from '../components/StyledText';
+import { FirstResponderToggle } from '../components/FirstResponderToggle';
 
 export default class ProfileScreen extends React.Component {
   static navigationOptions = {
@@ -23,6 +24,9 @@ export default class ProfileScreen extends React.Component {
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
           <View style={styles.profileContainer}>
             <Text style={styles.title}>Mon profile</Text>
+          </View>
+          <View style={styles.profileContainer}>
+            <FirstResponderToggle></FirstResponderToggle>
           </View>
         </ScrollView>
       </View>
