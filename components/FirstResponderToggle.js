@@ -32,31 +32,18 @@ export class FirstResponderToggle extends React.Component {
     );
   }
 
-  confirmCall(locations) {
-    console.log(locations);
-    console.log(token);
-  }
-
   async toto(value) {
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        console.log("Johny Bravo!", position);
+        var x = position.coords.longitude;
+        var y = position.coords.lattitude;
+        var connection = new WebSocket("ws://127.0.0.1:3000?token=" + this.state.token + "&x=" + x + "&y=" + y);
+           connection.onmessage = function(message) {
+           console.log(message + "111");
+         }
       },
       (error) => { console.log("error", error); this.setState({ error: error.message }) },
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
-   // var connection = new WebSocket('ws://127.0.0.1:3000?token=pew&x=46.5555495&y=-72.7408941');
-   //    connection.onmessage = function(message) {
-   //    console.log(message + "111");
-   //  }
-   //
-   //  fetch(ServerAPI.alerts, {
-   //    headers: {
-   //      'Accept': 'application/json',
-   //      'Content-Type': 'application/json'
-   //    },
-   //    method: "POST",
-   //    body: JSON.stringify({ position: { x: 46.5221586, y: -72.7448679, token: token } })
-   //  });
   }
 }
