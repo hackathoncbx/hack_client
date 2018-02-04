@@ -1,12 +1,14 @@
 import React from 'react';
 import {
   Animated,
+  Dimensions,
   Image,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { Switch } from 'react-native-switch';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import openMap from 'react-native-open-maps';
 
@@ -35,6 +37,23 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#999',
     fontSize: 10
+  },
+  filtersDropdown: {
+    backgroundColor: '#fefefe',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    borderLeftWidth: 1,
+    borderLeftColor: '#ccc',
+    borderRightWidth: 1,
+    borderRightColor: '#ccc',
+    flex: 1,
+    height: 175,
+    padding: 10,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    width: Dimensions.get('window').width  / 2,
+    zIndex: 1
   }
 })
 
@@ -42,14 +61,17 @@ export default class CartographyScreen extends React.Component {
 
   constructor(props) {
     super(props)
-    this.onPressMarker = this.onPressMarker.bind(this)
     this.onPressButton = this.onPressButton.bind(this)
+    this.onPressFilter = this.onPressFilter.bind(this)
+    this.onPressMarker = this.onPressMarker.bind(this)
     this.buttonText = this.buttonText.bind(this)
+    //this.updateActiveMarkerTypes = this.updateActiveMarkerTypes.bind(this)
   }
 
   state = {
     render: false,
     show: false,
+    showFilterDropdown: false,
     overlayImage: false,
     routeCoords: [],
     coords: {
@@ -60,13 +82,20 @@ export default class CartographyScreen extends React.Component {
     },
     transition: {},
     markers: [],
-    selectedMarkerCoordinates: null,
+    activeMarkerTypes: {
+      defibrillators: true,
+      hospitals: true,
+      drugStores: true
+    },
     region: {
       latitude: 46.5429,
       longitude: -72.748,
       latitudeDelta: 0.015,
       longitudeDelta: 0.0005,
-    }
+    },
+    switchStatesDefibrillators: true,
+    switchStatesHospitals: true,
+    switchStatesDrugStores: true
   };
 
   buttonText() {
@@ -130,7 +159,7 @@ export default class CartographyScreen extends React.Component {
       }, 10);
     });
 
-    this.getMarkersByType();
+    this.getMarkersByType(this.state.activeMarkerTypes);
   }
 
   decode = (t,e) => {for(var n,o,u=0,l=0,r=0,d= [],h=0,i=0,a=null,c=Math.pow(10,e||5);u<t.length;){a=null,h=0,i=0;do a=t.charCodeAt(u++)-63,i|=(31&a)<<h,h+=5;while(a>=32);n=1&i?~(i>>1):i>>1,h=i=0;do a=t.charCodeAt(u++)-63,i|=(31&a)<<h,h+=5;while(a>=32);o=1&i?~(i>>1):i>>1,l+=n,r+=o,d.push([l/c,r/c])}return d=d.map(function(t){return{latitude:t[0],longitude:t[1]}})}
@@ -138,7 +167,7 @@ export default class CartographyScreen extends React.Component {
 
   onPressMarker(e) {
     this.setState({selectedMarkerCoordinates: e.nativeEvent.coordinate});
-    this.getDirections(origin, e.nativeEvent.coordinate.latitude + ',' + e.nativeEvent.coordinate.longitude)
+    //this.getDirections(origin, e.nativeEvent.coordinate.latitude + ',' + e.nativeEvent.coordinate.longitude)
   }
 
   onPressButton(e) {
@@ -149,6 +178,10 @@ export default class CartographyScreen extends React.Component {
         provider: 'google'
       });
     }
+  }
+
+  onPressFilter(e) {
+    this.setState({showFilterDropdown: !this.state.showFilterDropdown});
   }
 
   async getDirections(startLoc, destLoc) {
@@ -180,7 +213,7 @@ export default class CartographyScreen extends React.Component {
       }
   }
 
-  async getMarkersByType(markerTypes) {
+  async getMarkersByType(activeMarkerTypes) {
     let markers = [
       {
         coordinate: {
@@ -192,15 +225,15 @@ export default class CartographyScreen extends React.Component {
       }
     ];
 
-    if (typeof(markerTypes === undefined) || markerTypes.includes("defibrillators")) {
+    if (activeMarkerTypes.defibrillators) {
       markers = markers.concat(await this.getDefibrillators());
     }
 
-    if (typeof(markerTypes === undefined) || markerTypes.includes("hospitals")) {
+    if (activeMarkerTypes.hospitals) {
       markers = markers.concat(await this.getHospitals());
     }
 
-    if (typeof(markerTypes === undefined) || markerTypes.includes("drugStores")) {
+    if (activeMarkerTypes.drugStores) {
       markers = markers.concat(await this.getDrugStores());
     }
 
@@ -259,7 +292,7 @@ export default class CartographyScreen extends React.Component {
     let drugStores = await resp.json();
 
     let drugStoreMarkers = drugStores.map((drugStore, _index) => {
-      return  {
+      return {
           coordinate: {
             latitude : drugStore.coordinates.latitude,
             longitude : drugStore.coordinates.longitude
@@ -270,6 +303,46 @@ export default class CartographyScreen extends React.Component {
     });
 
     return drugStoreMarkers;
+  }
+
+  updateActiveMarkerTypes(markerTypesChanges) {
+    var mthis = this
+    markerTypesChanges.forEach(function (markerTypeChange) {
+      mthis.state.activeMarkerTypes[markerTypeChange.markerType] = markerTypeChange.value;
+      mthis.getMarkersByType(mthis.state.activeMarkerTypes);
+    });
+  }
+
+  _renderFilterDropdown() {
+    if (this.state.showFilterDropdown) {
+      return (
+        <View style={styles.filtersDropdown} >
+          <View style={{flex: 1}}>
+            <Text>Defribrillators</Text>
+            <Switch
+              onValueChange={(value) => this.updateActiveMarkerTypes([{markerType: 'defibrillators', value: value}])}
+              value={this.state.switchStatesDefibrillators}
+            />
+          </View>
+          <View style={{flex: 1}}>
+            <Text>Hospitals</Text>
+            <Switch
+              onValueChange={(value) => this.updateActiveMarkerTypes([{markerType: 'hospitals', value: value}])}
+              value={this.state.switchStatesHospitals}
+            />
+          </View>
+          <View style={{flex: 1}}>
+            <Text>Drug Stores</Text>
+            <Switch
+              onValueChange={(value) => this.updateActiveMarkerTypes([{markerType: 'drugStores', value: value}])}
+              value={this.state.switchStatesDrugStores}
+            />
+          </View>
+        </View>
+      );
+    } else {
+        return null;
+    }
   }
 
   render() {
@@ -287,7 +360,7 @@ export default class CartographyScreen extends React.Component {
             </TouchableOpacity>
           </View>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={this.onPressButton}>
+            <TouchableOpacity style={styles.button} onPress={this.onPressFilter}>
               <Ionicons
                 name={'ios-funnel'}
                 size={28}
@@ -298,7 +371,7 @@ export default class CartographyScreen extends React.Component {
           </View>
         </View>
         <View style={{ flex: 11 }}>
-          <View style={{backgroundColor: '#ff0000', position: 'absolute', right: 0, top: 0, zIndex: 1}}><Text>Bli Bla Blou</Text></View>
+          {this._renderFilterDropdown()}
           <MapView
             style={{ flex: 1 }}
             initialRegion={this.state.region}
