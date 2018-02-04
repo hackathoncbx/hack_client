@@ -129,10 +129,9 @@ export default class ProfileScreen extends React.Component {
             onChangeText={(allergies) => this.setState({allergies})}
             value={this.state.allergies}/>
 
-          <Button
-            title="Soumettre"
-            onPress={this.handleSubmit}
-          />
+          <TouchableOpacity style={styles.button} onPress={this.handleSubmit}>
+           <Text style={styles.buttonText}>Soumettre</Text>
+         </TouchableOpacity>
         </View>
       </ScrollView>
     );
@@ -152,6 +151,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
     marginBottom: 20
+  },
+  button: {
+    flexDirection:'row',
+    alignItems:'center',
+    justifyContent:'center',
+    backgroundColor: '#6e8ab7',
+    borderWidth: 1,
+    borderColor: '#333',
+    flex: 1,
+    margin: 20,
+    paddingTop: 3,
+  },
+  buttonText: {
+    color: '#000',
+    fontSize: 40
   },
   title: {
     fontSize: 30,
