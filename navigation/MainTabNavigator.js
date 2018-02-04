@@ -8,6 +8,7 @@ import Colors from '../constants/Colors';
 import ProfileScreen from '../screens/ProfileScreen';
 import EmergencyStack from '../stacks/EmergencyStack';
 import CartographyScreen from '../screens/CartographyScreen';
+import WikiScreen from '../screens/WikiScreen';
 
 export default TabNavigator(
   {
@@ -20,25 +21,28 @@ export default TabNavigator(
     Cartography: {
       screen: CartographyScreen,
     },
+    Wiki: {
+      screen: WikiScreen,
+    }
   },
   {
     navigationOptions: ({ navigation }) => ({
       tabBarIcon: ({ focused }) => {
         const { routeName } = navigation.state;
+        let isIOS = () => { return Platform.OS === 'ios'; };
         let iconName;
         switch (routeName) {
           case 'Profile':
-            iconName =
-              Platform.OS === 'ios'
-                ? `ios-person${focused ? '' : '-outline'}`
-                : 'md-information-circle';
+            iconName = isIOS() ? `ios-person${focused ? '' : '-outline'}` : 'md-information-circle';
             break;
           case 'Emergency':
-            iconName = Platform.OS === 'ios' ? `ios-pulse${focused ? '' : '-outline'}` : 'md-pulse';
+            iconName = isIOS() ? `ios-pulse${focused ? '' : '-outline'}` : 'md-pulse';
+            break;
+          case 'Wiki':
+            iconName = isIOS() ? `ios-book${focused ? '' : '-outline'}` : 'md-book';
             break;
           case 'Cartography':
-            iconName =
-              Platform.OS === 'ios' ? `ios-map${focused ? '' : '-outline'}` : 'md-map';
+            iconName = isIOS() ? `ios-map${focused ? '' : '-outline'}` : 'md-map';
         }
         return (
           <Ionicons
