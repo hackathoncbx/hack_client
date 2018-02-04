@@ -1,10 +1,17 @@
 import React from 'react'
 
 import { Text, View, TouchableOpacity, StyleSheet } from 'react-native'
+
+import PropTypes from 'prop-types';
 import { Ionicons } from '@expo/vector-icons';
 
 
 export default class HandleEmergencyScreen extends React.Component {
+
+  static contextTypes = {
+    socket: PropTypes.object,
+  };
+
   render() {
     return (
       <View style={styles.pageContainer}>
@@ -34,7 +41,7 @@ export default class HandleEmergencyScreen extends React.Component {
                 size={28}
                 style={styles.buttonIcon}
               />
-              <Text style={styles.buttonText}>Yes</Text>
+              <Text style={styles.buttonText}>Accepter # {this.context.socket.data }</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.buttonContainer}>
@@ -44,12 +51,27 @@ export default class HandleEmergencyScreen extends React.Component {
                 size={28}
                 style={styles.buttonIcon}
               />
-              <Text style={styles.buttonText}>No</Text>
+              <Text style={styles.buttonText}>Rejeter # {this.context.socket.data }</Text>
             </TouchableOpacity>
           </View>
         </View>
       </View>
     )
+  }
+
+  _acceptEmergency() {
+    fetch(ServerAPI.acceptEmergency, {
+      headers: {
+       'Accept': 'application/json',
+       'Content-Type': 'application/json'
+      },
+      method: "POST",
+      body: JSON.stringify()
+    }).then((resp) => { return resp.json()}).then((resp) => { Object.assign(alarm, resp); });
+  }
+
+  _rejectEmergency() {
+
   }
 }
 

@@ -15,15 +15,18 @@ export default class App extends React.Component {
   constructor(props) {
     super(props)
     this.onHand = this.onHand.bind(this)
+    this.socket = {}
   }
 
   getChildContext() {
     return {
-      toggleAlert: this.toggleAlert
+      toggleAlert: this.toggleAlert,
+      socket: this.socket
     };
   }
   static childContextTypes = {
-    toggleAlert: PropTypes.func
+    toggleAlert: PropTypes.func,
+    socket: PropTypes.object
   };
 
   toggleAlert = (customAlert) => {
@@ -112,19 +115,19 @@ const styles = StyleSheet.create({
     height: 24,
     backgroundColor: 'rgba(0,0,0,0.2)',
   },
-  alert: {
-    paddingTop: 15,
-  },
-  text: {
-    color: 'white',
-    fontFamily: 'Arial',
-    paddingLeft: 15,
-    width: '70%',
-  },
-  right: {
-    height: 60,
-    alignItems: 'center',
-    paddingBottom: 30,
-    paddingRight: 30
+  // alert: {
+  //   paddingTop: 15,
+  // },
+  // text: {
+  //   color: 'white',
+  //   fontFamily: 'Arial',
+  //   paddingLeft: 15,
+  //   width: '70%',
+  // },
+  // right: {
+  //   height: 60,
+  //   alignItems: 'center',
+  //   paddingBottom: 30,
+  //   paddingRight: 30
   }
 });
