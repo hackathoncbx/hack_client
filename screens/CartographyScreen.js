@@ -23,16 +23,16 @@ const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origi
 
 const styles = StyleSheet.create({
   button: {
+    alignItems: 'center',
     backgroundColor: '#fefefe',
     flex: 1,
-    alignItems: 'center'
+    paddingTop: 3,
   },
   buttonContainer: {
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
     flex: 1,
     flexDirection: 'row'
-
   }
 })
 
@@ -42,6 +42,7 @@ export default class CartographyScreen extends React.Component {
     super(props)
     this.onPressMarker = this.onPressMarker.bind(this)
     this.onPressButton = this.onPressButton.bind(this)
+    this.buttonText = this.buttonText.bind(this)
   }
 
   state = {
@@ -67,6 +68,32 @@ export default class CartographyScreen extends React.Component {
       longitudeDelta: 0.0005,
     }
   };
+
+  buttonText() {
+    if (!!this.state.selectedMarkerCoordinates) {
+      return {
+        color: '#999',
+        fontSize: 10
+      };
+    } else {
+      return {
+        color: '#eee',
+        fontSize: 10
+      };
+    }
+  }
+
+  buttonIcon() {
+    if (!!this.state.selectedMarkerCoordinates) {
+      return {
+        color: '#999'
+      };
+    } else {
+      return {
+        color: '#eee'
+      };
+    }
+  }
 
   componentWillMount() {
     this.index = 0;
@@ -112,14 +139,12 @@ export default class CartographyScreen extends React.Component {
   // transforms something like this geocFltrhVvDsEtA}ApSsVrDaEvAcBSYOS_@... to an array of coordinates
 
   onPressMarker(e) {
-    this.state.selectedMarkerCoordinates = e.nativeEvent.coordinate;
-    this.getDirections(origin, e.nativeEvent.coordinate.latitude + ',' + e.nativeEvent.coordinate.longitude)
+    this.setState({selectedMarkerCoordinates: e.nativeEvent.coordinate});
+    //this.getDirections(origin, e.nativeEvent.coordinate.latitude + ',' + e.nativeEvent.coordinate.longitude)
   }
 
   onPressButton(e) {
-    alert('Got pressed.');
-    alert(JSON.stringify(this.state.selectedMarkerCoordinates));
-    if (typeof(this.state.selectedMarkerCoordinates !== undefined) ) {
+    if (this.state.selectedMarkerCoordinates) {
       openMap({
         latitude: this.state.selectedMarkerCoordinates.latitude,
         longitude: this.state.selectedMarkerCoordinates.longitude,
@@ -254,21 +279,48 @@ export default class CartographyScreen extends React.Component {
       <View style={{ flex: 1}}>
         <View style={{ flex: 1, flexDirection: 'row'}}>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={this.onPressButton}>
+            <TouchableOpacity disabled={!this.state.selectedMarkerCoordinates} style={styles.button} onPress={this.onPressButton}>
               <Ionicons
                 name={'ios-navigate'}
                 size={28}
-                color={'#ccc'}
+                style={this.buttonIcon()}
               />
-              <Text color={'#ccc'}>Navigate</Text>
+              <Text style={this.buttonText()}>Navigate</Text>
             </TouchableOpacity>
           </View>
-          <View style={styles.buttonContainer} />
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.button} onPress={this.onPressButton}>
+              <Ionicons
+                name={'ios-funnel'}
+                size={28}
+                style={styles.buttonIconEnabled}
+              />
+              <Text style={styles.buttonTextEnabled}>Filter</Text>
+            </TouchableOpacity>
+          </View>
         </View>
         <MapView
-          style={{ flex: 10 }}
+          style={{ flex: 11 }}
           initialRegion={this.state.region}
           >
+          {this.state.markers.map((marker, index) => {
+              return (
+                <Marker key={index}
+                  coordinate={marker.coordinate}
+                  title={marker.title}
+                  pinColor={marker.pinColor}
+                  onPress={this.onPressMarker}
+                  >
+                </Marker>
+              );
+            })}
+            <Polyline
+              coordinates={[
+                ...this.state.routeCoords
+              ]}
+              strokeColor="#0000FF"
+              strokeWidth={4}
+            />
         </MapView>
       </View>
     );
