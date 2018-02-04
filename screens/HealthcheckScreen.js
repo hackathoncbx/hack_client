@@ -2,8 +2,8 @@ import React from 'react'
 
 import { StyleSheet, Text, TouchableWithoutFeedback, View, } from 'react-native';
 import { StackNavigator } from 'react-navigation';
-
-import alarm from '../globals/Alarm'
+import ServerAPI from '../constants/ServerAPI';
+import alarm from '../globals/Alarm';
 
 export default class HeatlhcheckScreen extends React.Component {
   render() {
@@ -29,8 +29,20 @@ export default class HeatlhcheckScreen extends React.Component {
   }
 
   _handleEmergencySituation = () => {
-    alarm.stop()
-    this.props.navigation.navigate('BodyParts')
+    alarm.stop();
+    console.log(alarm);
+    alert(`the id is ${alarm.id}`);
+
+    fetch(ServerAPI.alerts + `/${alarm.id}`, {
+     headers: {
+       'Accept': 'application/json',
+       'Content-Type': 'application/json'
+     },
+     method: "PUT",
+     body: JSON.stringify({ token: alarm.token })
+   }).then(() => {
+     this.props.navigation.navigate('BodyParts');
+   });
   }
 }
 

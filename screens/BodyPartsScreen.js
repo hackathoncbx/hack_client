@@ -1,5 +1,7 @@
-import React from 'react'
-import _ from 'lodash'
+import React from 'react';
+import _ from 'lodash';
+import ServerAPI from '../constants/ServerAPI';
+import alarm from '../globals/Alarm';
 
 import { StyleSheet, Image, TouchableHighlight, } from 'react-native';
 
@@ -73,7 +75,7 @@ export default class BodyPartsScreen extends React.Component {
     right-l:      81-140    272-457
     */
 
-    let selected = _.find(this.bodyParts, (part) => {
+    let selected = _.findKey(this.bodyParts, (part) => {
       if (part.xrange) {
         if (x > part.xrange.min && x < part.xrange.max && y > part.yrange.min && y < part.yrange.max) {
           return true
@@ -84,7 +86,16 @@ export default class BodyPartsScreen extends React.Component {
     })
 
     if (selected) {
-      this.setState({ bodySelection: selected['src'] })
+      this.setState({ bodySelection: this.bodyParts[selected]['src'] });
+
+     fetch(ServerAPI.alerts + `/${alarm.id}`, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: "PUT",
+      body: JSON.stringify({ category: selected })
+    });
     }
   }
 }

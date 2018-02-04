@@ -3,6 +3,7 @@ import { StyleSheet, View, } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 
 import { EmergencyButton } from '../components/EmergencyButton';
+import alarm from '../globals/Alarm';
 
 export default class EmergencyScreen extends React.Component {
   constructor(){
@@ -22,7 +23,7 @@ export default class EmergencyScreen extends React.Component {
   }
 
   _handleClick(){
-    this.props.navigation.navigate('Healthcheck');
+   this.props.navigation.navigate('Healthcheck');
   }
 }
 

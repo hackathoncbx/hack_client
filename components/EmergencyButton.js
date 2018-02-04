@@ -1,14 +1,14 @@
-import React from 'react'
-import { Notifications } from 'expo'
-import { Image, StyleSheet, TouchableOpacity } from 'react-native'
+import React from 'react';
+import { Notifications } from 'expo';
+import { Image, StyleSheet, TouchableOpacity } from 'react-native';
 
-import ServerAPI from '../constants/ServerAPI'
-import alarm from '../globals/Alarm'
+import ServerAPI from '../constants/ServerAPI';
+import alarm from '../globals/Alarm';
 
 export class EmergencyButton extends React.Component {
   constructor(props) {
     super(props);
-    this._handleEmergencyPress = this._handleEmergencyPress.bind(this)
+    this._handleEmergencyPress = this._handleEmergencyPress.bind(this);
   }
 
   state = {
@@ -30,23 +30,19 @@ export class EmergencyButton extends React.Component {
   }
 
   async _handleEmergencyPress() {
-    console.log("coco");
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        var x = position.coords.longitude;
-        var y = position.coords.lattitude;
-
          fetch(ServerAPI.alerts, {
            headers: {
              'Accept': 'application/json',
              'Content-Type': 'application/json'
            },
            method: "POST",
-           body: JSON.stringify({ position: { x: x, y: y }, token: this.state.token })
-         });
+           body: JSON.stringify({ position: { longitude: position.coords.longitude, latitude: position.coords.latitude }, token: this.state.token })
+         }).then((resp) => { console.log(resp.json()); Object.assign(alarm, JSON.parse(resp._bodyText)); });
 
-         alarm.play()
-         this.props.onClick()
+         alarm.play();
+         this.props.onClick();
       },
       (error) => { console.log("error", error); this.setState({ error: error.message }) },
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },

@@ -244,7 +244,7 @@ export default class CartographyScreen extends React.Component {
           title: 'Pharmacie',
           pinColor: "#00FFFF"
       }
-    })
+    });
 
     return drugStoreMarkers;
   }

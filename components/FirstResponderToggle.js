@@ -1,9 +1,9 @@
-import React from 'react'
-import { Notifications } from 'expo'
-import { StyleSheet, Text} from 'react-native'
-import { Switch } from 'react-native-switch'
+import React from 'react';
+import { Notifications } from 'expo';
+import { StyleSheet, Text} from 'react-native';
+import { Switch } from 'react-native-switch';
 
-import ServerAPI from '../constants/ServerAPI'
+import ServerAPI from '../constants/ServerAPI';
 
 export class FirstResponderToggle extends React.Component {
   state = {
@@ -21,7 +21,7 @@ export class FirstResponderToggle extends React.Component {
     return (
       <Switch
         value={this.state.value}
-        onValueChange={(value) => this.toto(value)}
+        onValueChange={(value) => this.switchValueChange(value)}
         activeText={'On'}
         inActiveText={'Off'}
         backgroundActive={'green'}
@@ -32,7 +32,7 @@ export class FirstResponderToggle extends React.Component {
     );
   }
 
-  async toto(value) {
+  async switchValueChange(value) {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         var x = position.coords.longitude;
