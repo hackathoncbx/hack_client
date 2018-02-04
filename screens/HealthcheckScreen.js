@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { StyleSheet, Text, TouchableWithoutFeedback, View, } from 'react-native';
+import { StackNavigator } from 'react-navigation';
 
 import alarm from '../globals/Alarm'
 
@@ -8,7 +9,7 @@ export default class HeatlhcheckScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <TouchableWithoutFeedback onPress={this._handleStopAlarm}>
+        <TouchableWithoutFeedback onPress={this._handleEmergencySituation}>
           <View style={styles.category}>
             <Text style={styles.title}>
               TRAUMATISME
@@ -16,7 +17,7 @@ export default class HeatlhcheckScreen extends React.Component {
           </View>
         </TouchableWithoutFeedback>
 
-        <TouchableWithoutFeedback onPress={this._handleStopAlarm}>
+        <TouchableWithoutFeedback onPress={this._handleEmergencySituation}>
           <View style={styles.category}>
             <Text style={styles.title}>
               MÉDICALE
@@ -27,8 +28,9 @@ export default class HeatlhcheckScreen extends React.Component {
     );
   }
 
-  _handleStopAlarm = () => {
+  _handleEmergencySituation = () => {
     alarm.stop()
+    this.props.navigation.navigate('BodyParts')
   }
 }
 
