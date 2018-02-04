@@ -1,12 +1,11 @@
 import React from 'react';
 import {
-  StyleSheet,
-  Text,
-  View,
   Animated,
   Image,
-  Dimensions,
+  StyleSheet,
+  Text,
   TouchableOpacity,
+  View,
 } from "react-native";
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import openMap from 'react-native-open-maps';
@@ -15,11 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import ServerAPI from '../constants/ServerAPI'
 
-const mode = 'driving'; // 'walking';
 const origin = '46.540816,-72.748414';
-const destination = '46.540816,-72.748414';
-const APIKEY = 'AIzaSyAwk_xItQdpLFBWhBrk4crbmUhVHOjjrbI';
-const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${APIKEY}&mode=${mode}`;
 
 const styles = StyleSheet.create({
   button: {
@@ -53,8 +48,6 @@ export default class CartographyScreen extends React.Component {
   }
 
   state = {
-    initial: null,
-    openIndex: null,
     render: false,
     show: false,
     overlayImage: false,
@@ -138,8 +131,6 @@ export default class CartographyScreen extends React.Component {
     });
 
     this.getMarkersByType();
-
-    this.getDirections(origin, destination);
   }
 
   decode = (t,e) => {for(var n,o,u=0,l=0,r=0,d= [],h=0,i=0,a=null,c=Math.pow(10,e||5);u<t.length;){a=null,h=0,i=0;do a=t.charCodeAt(u++)-63,i|=(31&a)<<h,h+=5;while(a>=32);n=1&i?~(i>>1):i>>1,h=i=0;do a=t.charCodeAt(u++)-63,i|=(31&a)<<h,h+=5;while(a>=32);o=1&i?~(i>>1):i>>1,l+=n,r+=o,d.push([l/c,r/c])}return d=d.map(function(t){return{latitude:t[0],longitude:t[1]}})}
@@ -147,7 +138,7 @@ export default class CartographyScreen extends React.Component {
 
   onPressMarker(e) {
     this.setState({selectedMarkerCoordinates: e.nativeEvent.coordinate});
-    //this.getDirections(origin, e.nativeEvent.coordinate.latitude + ',' + e.nativeEvent.coordinate.longitude)
+    this.getDirections(origin, e.nativeEvent.coordinate.latitude + ',' + e.nativeEvent.coordinate.longitude)
   }
 
   onPressButton(e) {
@@ -306,29 +297,32 @@ export default class CartographyScreen extends React.Component {
             </TouchableOpacity>
           </View>
         </View>
-        <MapView
-          style={{ flex: 11 }}
-          initialRegion={this.state.region}
-          >
-          {this.state.markers.map((marker, index) => {
-              return (
-                <Marker key={index}
-                  coordinate={marker.coordinate}
-                  title={marker.title}
-                  pinColor={marker.pinColor}
-                  onPress={this.onPressMarker}
-                  >
-                </Marker>
-              );
-            })}
-            <Polyline
-              coordinates={[
-                ...this.state.routeCoords
-              ]}
-              strokeColor="#0000FF"
-              strokeWidth={4}
-            />
-        </MapView>
+        <View style={{ flex: 11 }}>
+          <View style={{backgroundColor: '#ff0000', position: 'absolute', right: 0, top: 0, zIndex: 1}}><Text>Bli Bla Blou</Text></View>
+          <MapView
+            style={{ flex: 1 }}
+            initialRegion={this.state.region}
+            >
+            {this.state.markers.map((marker, index) => {
+                return (
+                  <Marker key={index}
+                    coordinate={marker.coordinate}
+                    title={marker.title}
+                    pinColor={marker.pinColor}
+                    onPress={this.onPressMarker}
+                    >
+                  </Marker>
+                );
+              })}
+              <Polyline
+                coordinates={[
+                  ...this.state.routeCoords
+                ]}
+                strokeColor="#0000FF"
+                strokeWidth={4}
+              />
+          </MapView>
+        </View>
       </View>
     );
   }
