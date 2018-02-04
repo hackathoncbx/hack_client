@@ -33,6 +33,13 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
     flex: 1,
     flexDirection: 'row'
+  },
+  buttonIcon: {
+    color: '#999'
+  },
+  buttonText: {
+    color: '#999',
+    fontSize: 10
   }
 })
 
@@ -293,9 +300,9 @@ export default class CartographyScreen extends React.Component {
               <Ionicons
                 name={'ios-funnel'}
                 size={28}
-                style={styles.buttonIconEnabled}
+                style={styles.buttonIcon}
               />
-              <Text style={styles.buttonTextEnabled}>Filter</Text>
+              <Text style={styles.buttonText}>Filter</Text>
             </TouchableOpacity>
           </View>
         </View>
