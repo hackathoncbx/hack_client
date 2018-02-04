@@ -1,9 +1,10 @@
-import React from 'react';
-import { Notifications } from 'expo';
-import { StyleSheet, Text} from 'react-native';
-import { Switch } from 'react-native-switch';
+import React from 'react'
+import PropTypes from 'prop-types';
+import { Notifications } from 'expo'
+import { StyleSheet, Text} from 'react-native'
+import { Switch } from 'react-native-switch'
 
-import ServerAPI from '../constants/ServerAPI';
+import ServerAPI from '../constants/ServerAPI'
 
 export class FirstResponderToggle extends React.Component {
   state = {
@@ -11,17 +12,23 @@ export class FirstResponderToggle extends React.Component {
     token: null
   };
 
+  static contextTypes = {
+    toggleAlert: PropTypes.func
+  };
+
   componentWillMount() {
     Notifications.getExpoPushTokenAsync().then((resp) => {
       this.setState({ token: resp });
     });
+    this.registerResponder = this.registerResponder.bind(this)
+    console.log(this.context.toggleAlert)
   }
 
   render() {
     return (
       <Switch
         value={this.state.value}
-        onValueChange={(value) => this.switchValueChange(value)}
+        onValueChange={(value) => this.registerResponder(value)}
         activeText={'On'}
         inActiveText={'Off'}
         backgroundActive={'green'}
@@ -32,14 +39,15 @@ export class FirstResponderToggle extends React.Component {
     );
   }
 
-  async switchValueChange(value) {
+  async registerResponder(value) {
+    toggleAlert = this.context.toggleAlert
     navigator.geolocation.getCurrentPosition(
       (position) => {
         var x = position.coords.longitude;
         var y = position.coords.latitude;
         var connection = new WebSocket(ServerAPI.wsResponder + "?token=" + this.state.token + "&longitude=" + x + "&latitude=" + y);
         connection.onmessage = function(message) {
-          console.log(message.data + "111");
+          toggleAlert(message.data + "111");
         }
       },
       (error) => { console.log("error", error); this.setState({ error: error.message }) },

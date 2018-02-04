@@ -1,12 +1,31 @@
 import React from 'react';
-import { Platform, StatusBar, StyleSheet, View } from 'react-native';
+import PropTypes from 'prop-types';
+import { Platform, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { AppLoading, Asset, Font } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
 import RootNavigation from './navigation/RootNavigation';
 
+import StatusBarAlert from 'react-native-statusbar-alert';
+
 export default class App extends React.Component {
   state = {
     isLoadingComplete: false,
+  };
+
+  getChildContext() {
+    return {
+      toggleAlert: this.toggleAlert
+    };
+  }
+  static childContextTypes = {
+    toggleAlert: PropTypes.func
+  };
+
+  toggleAlert = (customAlert) => {
+    this.setState({
+      alert: !this.state.alert,
+      customAlert
+    });
   };
 
   render() {
@@ -23,6 +42,19 @@ export default class App extends React.Component {
         <View style={styles.container}>
           {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
           {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
+          <StatusBar
+            barStyle={this.state.alert ? 'light-content' : 'dark-content'}
+          />
+          <StatusBarAlert
+            visible={this.state.alert}
+            message="Alert!"
+            backgroundColor="#3CC29E"
+            color="white"
+            style={styles.alert}
+            onPress={this.toggleAlert}
+          >
+            <Text>{this.state.customAlert}</Text>
+          </StatusBarAlert>
           <RootNavigation />
         </View>
       );
