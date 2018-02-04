@@ -6,7 +6,7 @@ import { TabNavigator, TabBarBottom } from 'react-navigation';
 import Colors from '../constants/Colors';
 
 import ProfileScreen from '../screens/ProfileScreen';
-import EmergencyScreen from '../screens/EmergencyScreen';
+import EmergencyStack from '../stacks/EmergencyStack';
 import CartographyScreen from '../screens/CartographyScreen';
 
 export default TabNavigator(
@@ -15,7 +15,7 @@ export default TabNavigator(
       screen: ProfileScreen,
     },
     Emergency: {
-      screen: EmergencyScreen,
+      screen: EmergencyStack,
     },
     Cartography: {
       screen: CartographyScreen,
@@ -50,7 +50,7 @@ export default TabNavigator(
         );
       },
     }),
-    initialRouteName: 'Cartography',
+    initialRouteName: 'Emergency',
     tabBarComponent: TabBarBottom,
     tabBarPosition: 'bottom',
     animationEnabled: false,

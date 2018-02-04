@@ -6,6 +6,11 @@ import ServerAPI from '../constants/ServerAPI'
 import alarm from '../globals/Alarm'
 
 export class EmergencyButton extends React.Component {
+  constructor(props) {
+    super(props);
+    this._handleEmergencyPress = this._handleEmergencyPress.bind(this)
+  }
+
   render() {
     return (
       <TouchableOpacity onPress={this._handleEmergencyPress}>
@@ -29,6 +34,7 @@ export class EmergencyButton extends React.Component {
     });
 
     alarm.play()
+    this.props.onClick()
   }
 }
 

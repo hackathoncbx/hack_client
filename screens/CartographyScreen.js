@@ -9,23 +9,33 @@ import {
   TouchableOpacity,
 } from "react-native";
 import MapView, { Marker, Polyline } from 'react-native-maps';
+import openMap from 'react-native-open-maps';
+
+import { Ionicons } from '@expo/vector-icons';
+
+import ServerAPI from '../constants/ServerAPI'
 
 const mode = 'driving'; // 'walking';
-const origin = '46.540816, -72.748414';
-const destination = '46.540816, -72.748414';
+const origin = '46.540816,-72.748414';
+const destination = '46.540816,-72.748414';
 const APIKEY = 'AIzaSyAwk_xItQdpLFBWhBrk4crbmUhVHOjjrbI';
 const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${APIKEY}&mode=${mode}`;
+
+const styles = StyleSheet.create({
+  button: {
+    padding: 10,
+    backgroundColor: '#FFF',
+    borderBottom: '1px',
+  }
+})
 
 export default class CartographyScreen extends React.Component {
 
   constructor(props) {
     super(props)
     this.onPressMarker = this.onPressMarker.bind(this)
+    this.onPressButton = this.onPressButton.bind(this)
   }
-
-  static navigationOptions = {
-    title: 'Map'
-  };
 
   state = {
     initial: null,
@@ -41,7 +51,8 @@ export default class CartographyScreen extends React.Component {
       height: new Animated.Value(0),
     },
     transition: {},
-    markers: this.getMarkersByType(),
+    markers: [],
+    selectedMarkerCoordinates: null,
     region: {
       latitude: 46.5429,
       longitude: -72.748,
@@ -85,6 +96,8 @@ export default class CartographyScreen extends React.Component {
       }, 10);
     });
 
+    this.getMarkersByType();
+
     this.getDirections(origin, destination);
   }
 
@@ -92,7 +105,16 @@ export default class CartographyScreen extends React.Component {
   // transforms something like this geocFltrhVvDsEtA}ApSsVrDaEvAcBSYOS_@... to an array of coordinates
 
   onPressMarker(e) {
+    this.state.selectedMarkerCoordinates = e.nativeEvent.coordinate;
     this.getDirections(origin, e.nativeEvent.coordinate.latitude + ',' + e.nativeEvent.coordinate.longitude)
+  }
+
+  onPressButton(e) {
+    openMap({
+      latitude: this.state.selectedMarkerCoordinates.latitude,
+      longitude: this.state.selectedMarkerCoordinates.longitude,
+      provider: 'google'
+    });
   }
 
   async getDirections(startLoc, destLoc) {
@@ -124,7 +146,7 @@ export default class CartographyScreen extends React.Component {
       }
   }
 
-  getMarkersByType(markerTypes) {
+  async getMarkersByType(markerTypes) {
     let markers = [
       {
         coordinate: {
@@ -136,8 +158,8 @@ export default class CartographyScreen extends React.Component {
       }
     ];
 
-    if (typeof(markerTypes === undefined) || markerTypes.includes("defibrilators")) {
-      markers = markers.concat(this.getDefibrilators());
+    if (typeof(markerTypes === undefined) || markerTypes.includes("defibrillators")) {
+      markers = markers.concat(await this.getDefibrillators());
     }
 
     if (typeof(markerTypes === undefined) || markerTypes.includes("hospitals")) {
@@ -148,22 +170,30 @@ export default class CartographyScreen extends React.Component {
       markers = markers.concat(this.getDrugStores());
     }
 
+    this.setState({markers: markers})
     return markers;
   }
 
-  getDefibrilators() {
-    return [
-      {
-        coordinate: {
-          latitude: 46.547874,
-          longitude: -72.744969,
-        },
-        title: "Centre Gervais Auto",
-        description: "Where hockey is played",
-        type: "Defibrilator",
-        pinColor: "#0000FF"
-      },
-    ]
+  async getDefibrillators() {
+
+    let resp = await fetch(ServerAPI.defibrillators, {
+      method: 'GET'
+    });
+
+    let defibrillators = await resp.json();
+
+    let defibrillatorMarkers = defibrillators.map((defibrillator, _index) => {
+      return  {
+          coordinate: {
+            latitude : defibrillator.coordinates.latitude,
+            longitude : defibrillator.coordinates.longitude
+          },
+          title: 'Défribrillateur',
+          pinColor: "#0000FF"
+      }
+    })
+
+    return defibrillatorMarkers;
   }
 
   getHospitals() {
@@ -216,10 +246,19 @@ export default class CartographyScreen extends React.Component {
               ...this.state.routeCoords
             ]}
         		strokeColor="#0000FF" // fallback for when `strokeColors` is not supported by the map-provider
-        		strokeWidth={6}
+        		strokeWidth={4}
         	/>
-        </MapView>
 
+          <TouchableOpacity style={styles.button} onPress={this.onPressButton} >
+            <Ionicons
+              name={'ios-navigate'}
+              size={28}
+              style={{ marginBottom: -3 }}
+            />
+            <Text>Navigate to this marker</Text>
+          </TouchableOpacity>
+
+        </MapView>
     );
   }
 }
